@@ -1,11 +1,15 @@
 import express from "express";
 import { config } from "dotenv";
+
+config(); // Load environment variables from .env file
+
 import { connectDB, disconnectDB } from "./config/db.js";
 
 // Import Routes
 import movieRoutes from './routes/movieRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
-config(); // Load environment variables from .env file
+
 connectDB(); // Connect to the database
 
 const app = express();
@@ -14,6 +18,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 
 // API Routes
 app.use('/api', movieRoutes);
+app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello, World!' });
@@ -36,8 +41,10 @@ process.on("unhandledRejection", (err) => {
 // Handle uncaught exceptions (e.g., programming errors)
 process.on("uncaughtException", (err) => {
     console.error("Uncaught Exception:", err);
-    await disconnectDB(); // Ensure database connection is closed
-    process.exit(1); // Exit the process with an error code
+    server.close(async () => {
+        await disconnectDB(); // Ensure database connection is closed
+        process.exit(1); // Exit the process with an error code
+    });
 });
 
 // Graceful shutdown
