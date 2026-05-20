@@ -1,8 +1,20 @@
 import { PrismaClient } from "@prisma/client";
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 
-const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"]
-});
+const pool = new Pool(
+    { 
+        connectionString: process.env.DATABASE_URL  
+    }
+)
+
+const adapter = new PrismaPg(pool)
+
+const prisma = new PrismaClient({ 
+        adapter,
+        log: process.env.DATABASE_URL === "development" ? ["query", "error", "warn"] : ["error"]
+    }
+);
 
 const connectDB = async () => {
     try {
@@ -18,4 +30,4 @@ const disconnectDB = async () => {
         await prisma.$disconnect()
 }
 
-export { prisma, connectDB, disconnectDB };
+export { pool, adapter, prisma, connectDB, disconnectDB };
