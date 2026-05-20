@@ -10,6 +10,8 @@ connectDB(); // Connect to the database
 
 const app = express();
 
+app.use(express.json()); // Middleware to parse JSON request bodies
+
 // API Routes
 app.use('/api', movieRoutes);
 
@@ -17,7 +19,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Hello, World!' });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });
