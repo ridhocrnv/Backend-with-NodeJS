@@ -20,4 +20,51 @@ model User {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    movies Movie[] @relation("MovieCreator")
+    watchlistItems WatchlistItem[]
 }
+
+// Movie model
+model Movie {
+    id String @id @default(uuid())
+    title String
+    director String
+    overview String
+    releaseYear Int
+    genres String[] @default([])
+    runtime Int?
+    posterUrl String?
+    createdBy String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    creator User @relation("MovieCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+    watchlistItems WatchlistItem[]
+}
+
+// Watchlist model
+model WatchlistItem {
+    id String @id @default(uuid())
+    userId String
+    movieId String
+    status WatchlistStatus @default(PLANNED) // e.g., "watching", "completed", "plan to watch"
+    rating Int? // User rating for the movie (1-10)
+    notes String? // User notes about the movie
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+}
+
+// Enum for watchlist status
+enum WatchlistStatus {
+    PLANNED
+    WATCHING
+    COMPLETED
+    DROPPED
+}
+
+// Add more models as needed, such as Review, Genre, etc.
