@@ -5,6 +5,8 @@ import { config } from "dotenv";
 // Import Routes
 import movieRoutes from './routes/movieRoutes.js';
 
+config(); // Load environment variables from .env file
+
 const app = express();
 
 // API Routes
